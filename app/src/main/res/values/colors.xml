@@ -3,4 +3,12 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <!-- Black with opacity -->
+    <color name="text_primary">#de000000</color>
+    <color name="text_secondary">#8a000000</color>
+    <color name="text_hint">#42000000</color>
+    <color name="disabled">#42000000</color>
+    <color name="divider">#1f000000</color>
+
 </resources>
