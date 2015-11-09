@@ -12,8 +12,10 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.shushper.newsfeed.api.request.ApiRequest;
+import com.shushper.newsfeed.helpers.GsonUtcDateAdapter;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import io.realm.RealmObject;
 import retrofit.RestAdapter;
@@ -74,6 +76,7 @@ public class ApiServiceHelper {
                         return false;
                     }
                 })
+                .registerTypeAdapter(Date.class, new GsonUtcDateAdapter())
                 .create();
 
         RestAdapter restAdapter = new RestAdapter.Builder()

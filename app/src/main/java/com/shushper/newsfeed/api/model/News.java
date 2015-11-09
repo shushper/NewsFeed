@@ -1,5 +1,7 @@
 package com.shushper.newsfeed.api.model;
 
+import java.util.Date;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -12,6 +14,9 @@ public class News extends RealmObject {
 
     private String title;
     private String content;
+
+    private Date createdAt;
+
 
     public String getObjectId() {
         return objectId;
@@ -45,5 +50,11 @@ public class News extends RealmObject {
         this.content = content;
     }
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
 
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
 }

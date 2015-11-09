@@ -67,7 +67,7 @@ public class NewsActivity extends AppCompatActivity implements ApiServiceHelper.
     }
 
     private void queryNews() {
-        RealmResults<News> news = mRealm.allObjects(News.class);
+        RealmResults<News> news = mRealm.where(News.class).findAllSorted("createdAt", false);
         mAdapter.setNews(news);
     }
 

@@ -5,11 +5,14 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.ResultReceiver;
 import android.support.annotation.WorkerThread;
+import android.util.Log;
 
 import retrofit.RetrofitError;
 
 
 public abstract class ApiRequest implements Parcelable {
+    private static final String TAG = "ApiRequest";
+
     /**
      * Запрос выполнен успешно
      */
@@ -43,6 +46,7 @@ public abstract class ApiRequest implements Parcelable {
         try {
             doExecute(callback, context);
         } catch (RetrofitError e) {
+            Log.e(TAG, "execute: Retrofit error", e);
             callback.send(RESULT_RETROFIT_ERROR, createRetrofitErrorBundle(e));
         }
     }

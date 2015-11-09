@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.shushper.newsfeed.R;
 import com.shushper.newsfeed.api.model.News;
+import com.shushper.newsfeed.helpers.TimeFormatter;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -17,10 +18,12 @@ import java.util.List;
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     private static final String TAG = "NewsAdapter";
 
-    List<News> mNews;
+    private List<News>    mNews;
+    private TimeFormatter mTimeFormatter;
 
     public NewsAdapter() {
         mNews = new ArrayList<>();
+        mTimeFormatter = new TimeFormatter(TimeFormatter.PATTERN_NEWS_FEED);
     }
 
 
@@ -36,7 +39,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
 
         holder.title.setText(news.getTitle());
-//        holder.date.setText(String.valueOf(news.getDate()));
+        holder.date.setText(mTimeFormatter.format(news.getCreatedAt()));
 
         Picasso.with(holder.itemView.getContext())
                .load(news.getImageUrl())
