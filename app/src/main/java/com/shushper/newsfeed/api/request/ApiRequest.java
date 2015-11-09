@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import android.os.ResultReceiver;
 import android.support.annotation.WorkerThread;
 
-import java.io.IOException;
+import retrofit.RetrofitError;
 
 
 public abstract class ApiRequest implements Parcelable {
@@ -21,19 +21,19 @@ public abstract class ApiRequest implements Parcelable {
     public static final int RESULT_FAILURE = 1;
 
     /**
-     * Ошибка IOExeption
-     */
-    public static final int RESULT_IO_EXCEPTION = 2;
-
-    /**
      * Изменение статуса выполнения запроса.
      */
-    public static final int RESULT_STATUS = 3;
+    public static final int RESULT_STATUS = 2;
+
+    /**
+     * Ошибка Retrofit
+     */
+    public static final int RESULT_RETROFIT_ERROR = 3;
 
 
-    public static final String EXTRA_IO_EXCEPTION = "io_exception";
-    public static final String EXTRA_STATUS_CODE  = "status_code";
-    public static final String EXTRA_FAILURE_CODE = "failure_code";
+    public static final String EXTRA_STATUS_CODE    = "status_code";
+    public static final String EXTRA_FAILURE_CODE   = "failure_code";
+    public static final String EXTRA_RETROFIT_ERROR = "retrofit_error";
 
 
     public abstract String getName();
@@ -42,16 +42,16 @@ public abstract class ApiRequest implements Parcelable {
     public final void execute(ResultReceiver callback, Context context) {
         try {
             doExecute(callback, context);
-        } catch (IOException e) {
-            callback.send(RESULT_IO_EXCEPTION, createIOExceptionBundle(e));
+        } catch (RetrofitError e) {
+            callback.send(RESULT_RETROFIT_ERROR, createRetrofitErrorBundle(e));
         }
     }
 
-    protected abstract void doExecute(ResultReceiver callback, Context context) throws IOException;
+    protected abstract void doExecute(ResultReceiver callback, Context context);
 
-    private Bundle createIOExceptionBundle(IOException exception) {
+    private Bundle createRetrofitErrorBundle(RetrofitError error) {
         Bundle bundle = new Bundle();
-        bundle.putSerializable(EXTRA_IO_EXCEPTION, exception);
+        bundle.putSerializable(EXTRA_RETROFIT_ERROR, error);
         return bundle;
     }
 }

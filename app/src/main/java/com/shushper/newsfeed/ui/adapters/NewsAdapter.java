@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.shushper.newsfeed.R;
 import com.shushper.newsfeed.api.model.News;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,21 +32,25 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-//        News news = mNews.get(position);
-//
-//
-//        holder.title.setText(news.getTitle());
+        News news = mNews.get(position);
+
+
+        holder.title.setText(news.getTitle());
 //        holder.date.setText(String.valueOf(news.getDate()));
-//
-//        Picasso.with(holder.itemView.getContext())
-//               .load(news.getImageUrl())
-//               .into(holder.image);
+
+        Picasso.with(holder.itemView.getContext())
+               .load(news.getImageUrl())
+               .into(holder.image);
 
     }
 
     @Override
     public int getItemCount() {
         return mNews.size();
+    }
+
+    public void setNews(List<News> news) {
+        mNews = news;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

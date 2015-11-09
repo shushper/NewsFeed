@@ -7,18 +7,18 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.util.Log;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.shushper.newsfeed.api.request.ApiRequest;
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
-import retrofit.GsonConverterFactory;
-import retrofit.Retrofit;
+import io.realm.RealmObject;
+import retrofit.RestAdapter;
+import retrofit.RetrofitError;
+import retrofit.converter.GsonConverter;
 
 
 public class ApiServiceHelper {
@@ -62,38 +62,30 @@ public class ApiServiceHelper {
     }
 
     private ApiInterface configureApiInterface() {
-        OkHttpClient client = new OkHttpClient();
-        client.interceptors().add(new HeadersInterceptor());
+        Gson gson = new GsonBuilder()
+                .setExclusionStrategies(new ExclusionStrategy() {
+                    @Override
+                    public boolean shouldSkipField(FieldAttributes f) {
+                        return f.getDeclaringClass().equals(RealmObject.class);
+                    }
 
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        client.interceptors().add(loggingInterceptor);
+                    @Override
+                    public boolean shouldSkipClass(Class<?> clazz) {
+                        return false;
+                    }
+                })
+                .create();
 
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ApiInterface.API_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
+        RestAdapter restAdapter = new RestAdapter.Builder()
+                .setEndpoint(ApiInterface.API_URL)
+                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setConverter(new GsonConverter(gson))
                 .build();
 
-        return retrofit.create(ApiInterface.class);
+        return restAdapter.create(ApiInterface.class);
     }
 
-    private class HeadersInterceptor implements Interceptor {
 
-        @Override
-        public Response intercept(Chain chain) throws IOException {
-            Request original = chain.request();
-
-            Request request = original.newBuilder()
-                                      .header("X-Parse-Application-Id", "zgYc2rHs0d40x63tmPIJ70TKLp33Wchz92cXhx3T")
-                                      .header("X-Parse-REST-API-Key", "izwO6ngy0cBsjV3m3x0f0Xk2WvjQRovUXuZnsSjc")
-                                      .method(original.method(), original.body())
-                                      .build();
-
-            return chain.proceed(request);
-        }
-    }
 
     public void sendRequest(ApiRequest request) {
 
@@ -134,10 +126,10 @@ public class ApiServiceHelper {
         protected void onReceiveResult(int resultCode, Bundle resultData) {
 
             switch (resultCode) {
-                case ApiRequest.RESULT_IO_EXCEPTION:
+                case ApiRequest.RESULT_RETROFIT_ERROR:
                     mPendingRequests.remove(mRequestName);
-                    IOException exception = (IOException) resultData.getSerializable(ApiRequest.EXTRA_IO_EXCEPTION);
-                    notifyListenersAboutIOException(exception);
+                    RetrofitError error = (RetrofitError) resultData.getSerializable(ApiRequest.EXTRA_RETROFIT_ERROR);
+                    notifyListenersAboutRetrofitError(error);
                     break;
 
                 case ApiRequest.RESULT_SUCCESS:
@@ -158,10 +150,10 @@ public class ApiServiceHelper {
             }
         }
 
-        private void notifyListenersAboutIOException(IOException exception) {
+        private void notifyListenersAboutRetrofitError(RetrofitError error) {
             for (ApiServiceHelperListener listener : mListeners) {
                 if (listener != null) {
-                    listener.onIOException(mRequestName, exception);
+                    listener.onRetrofitError(mRequestName, error);
                 }
             }
         }
@@ -199,7 +191,7 @@ public class ApiServiceHelper {
 
         void onRequestFailed(String requestName, int failureCode);
 
-        void onIOException(String requestName, IOException exception);
+        void onRetrofitError(String requestName, RetrofitError error);
     }
 
     public void addListener(ApiServiceHelperListener l) {

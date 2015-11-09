@@ -10,12 +10,9 @@ import com.shushper.newsfeed.api.ApiResponse;
 import com.shushper.newsfeed.api.ApiServiceHelper;
 import com.shushper.newsfeed.api.model.News;
 
-import java.io.IOException;
 import java.util.List;
 
 import io.realm.Realm;
-import retrofit.Call;
-import retrofit.Response;
 
 
 public class NewsFeedRequest extends ApiRequest {
@@ -31,27 +28,19 @@ public class NewsFeedRequest extends ApiRequest {
     }
 
     @Override
-    protected void doExecute(ResultReceiver callback, Context context) throws IOException {
+    protected void doExecute(ResultReceiver callback, Context context) {
 
-        Call<ApiResponse<News>> call = ApiServiceHelper.getInstance().getsApiInterface().getNews();
-        Response<ApiResponse<News>> response = call.execute();
+        ApiResponse<News> response = ApiServiceHelper.getInstance().getsApiInterface().getNews();
+        Log.d(REQUEST_NAME, "doExecute: succuss");
 
+        List<News> news = response.getResults();
 
-        if (response.isSuccess()) {
-            Log.d(REQUEST_NAME, "doExecute: succuss");
-
-            List<News> news = response.body().getResults();
-
-            Realm realm = Realm.getDefaultInstance();
-            realm.beginTransaction();
-            realm.copyToRealmOrUpdate(news);
-            realm.commitTransaction();
-            realm.close();
-            callback.send(RESULT_SUCCESS, null);
-        } else {
-            Log.d(REQUEST_NAME, "doExecute: failure");
-        }
-
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(news);
+        realm.commitTransaction();
+        realm.close();
+        callback.send(RESULT_SUCCESS, null);
     }
 
 
