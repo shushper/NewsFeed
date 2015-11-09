@@ -18,7 +18,7 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import retrofit.RetrofitError;
 
-public class NewsActivity extends AppCompatActivity implements ApiServiceHelper.ApiServiceHelperListener {
+public class NewsActivity extends AppCompatActivity implements ApiServiceHelper.ApiServiceHelperListener, NewsAdapter.Listener {
     private static final String TAG = "NewsActivity";
 
     private NewsAdapter mAdapter;
@@ -35,8 +35,9 @@ public class NewsActivity extends AppCompatActivity implements ApiServiceHelper.
         setSupportActionBar(toolbar);
 
         mRealm = Realm.getDefaultInstance();
-        mAdapter = new NewsAdapter();
 
+        mAdapter = new NewsAdapter();
+        mAdapter.setListener(this);
 
         RecyclerView newsRecycler = (RecyclerView) findViewById(R.id.news_recycler);
         newsRecycler.setHasFixedSize(true);
@@ -96,5 +97,10 @@ public class NewsActivity extends AppCompatActivity implements ApiServiceHelper.
 
             Toast.makeText(this, getString(R.string.io_exception, error.getMessage()), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onItemClick(String itemId) {
+        ItemActivity.start(this, itemId);
     }
 }

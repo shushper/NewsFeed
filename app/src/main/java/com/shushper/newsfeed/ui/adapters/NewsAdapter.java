@@ -21,6 +21,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     private List<News>    mNews;
     private TimeFormatter mTimeFormatter;
 
+    private Listener mListener;
+
     public NewsAdapter() {
         mNews = new ArrayList<>();
         mTimeFormatter = new TimeFormatter(TimeFormatter.PATTERN_NEWS_FEED);
@@ -35,7 +37,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        News news = mNews.get(position);
+        final News news = mNews.get(position);
 
 
         holder.title.setText(news.getTitle());
@@ -45,6 +47,14 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
                .load(news.getImageUrl())
                .into(holder.image);
 
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mListener != null) {
+                    mListener.onItemClick(news.getObjectId());
+                }
+            }
+        });
     }
 
     @Override
@@ -54,6 +64,14 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
     public void setNews(List<News> news) {
         mNews = news;
+    }
+
+    public interface Listener {
+        void onItemClick(String itemId);
+    }
+
+    public void setListener(Listener l) {
+        mListener = l;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

@@ -23,6 +23,10 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.ItemActivity"
+            android:screenOrientation="portrait"/>
+
         <service
             android:name=".api.ApiService"
             android:exported="false"/>
