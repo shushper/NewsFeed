@@ -8,8 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.shushper.newsfeed.R;
-import com.shushper.newsfeed.model.News;
-import com.squareup.picasso.Picasso;
+import com.shushper.newsfeed.api.model.News;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,25 +16,12 @@ import java.util.List;
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     private static final String TAG = "NewsAdapter";
 
-    private List<News> mNews;
+    List<News> mNews;
 
     public NewsAdapter() {
-        mNews = createNewsList();
+        mNews = new ArrayList<>();
     }
 
-    private List<News> createNewsList() {
-        List<News> newsList = new ArrayList<>();
-
-        News news = new News();
-        news.setId(0);
-        news.setImageUrl("http://www.e1.ru/news/images/new1/432/591/images/DSC_0148_300x199.JPG");
-        news.setDate(1446527100);
-        news.setTitle("Роспотребнадзор признал, что паркоматы, которые не берут наличку, вне закона");
-        newsList.add(news);
-
-        return newsList;
-
-    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -45,15 +31,15 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        News news = mNews.get(position);
-
-
-        holder.title.setText(news.getTitle());
-        holder.date.setText(String.valueOf(news.getDate()));
-
-        Picasso.with(holder.itemView.getContext())
-               .load(news.getImageUrl())
-               .into(holder.image);
+//        News news = mNews.get(position);
+//
+//
+//        holder.title.setText(news.getTitle());
+//        holder.date.setText(String.valueOf(news.getDate()));
+//
+//        Picasso.with(holder.itemView.getContext())
+//               .load(news.getImageUrl())
+//               .into(holder.image);
 
     }
 
