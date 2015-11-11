@@ -6,12 +6,10 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import com.shushper.newsfeed.R;
 import com.shushper.newsfeed.api.model.News;
@@ -22,7 +20,7 @@ import java.util.List;
 
 import io.realm.Realm;
 
-public class PhotoViewerActivity extends AppCompatActivity {
+public class PhotoViewerActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener {
 
     private static final String EXTRA_ITEM_ID  = "item_id";
     private static final String EXTRA_PHOTO_ID = "photo_id";
@@ -35,30 +33,36 @@ public class PhotoViewerActivity extends AppCompatActivity {
     }
 
     //////////////////////////////////////////////////////////////////////////
+    private static final String TAG = "PhotoViewerActivity";
 
     private Realm mRealm;
 
     private List<Photo> mPhotos;
-
-    private GestureDetectorCompat mGestureDetector;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo_viewer);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        //noinspection ConstantConditions
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
         Bundle extras = getIntent().getExtras();
 
         String itemId = extras.getString(EXTRA_ITEM_ID);
 
         mRealm = Realm.getDefaultInstance();
-        mGestureDetector = new GestureDetectorCompat(this, new PhotoGestureListener());
-
 
         News item = mRealm.where(News.class).equalTo("objectId", itemId).findFirst();
         mPhotos = item.getPhotos();
 
         ViewPager pager = (ViewPager) findViewById(R.id.photo_pager);
+        pager.addOnPageChangeListener(this);
+
+
         PhotoPagerAdapter adapter = new PhotoPagerAdapter(getSupportFragmentManager());
         pager.setAdapter(adapter);
 
@@ -74,6 +78,8 @@ public class PhotoViewerActivity extends AppCompatActivity {
                     break;
                 }
             }
+
+            updateTitle(initPosition);
             pager.setCurrentItem(initPosition);
         }
     }
@@ -85,11 +91,33 @@ public class PhotoViewerActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        mGestureDetector.onTouchEvent(event);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
-        return super.onTouchEvent(event);
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        updateTitle(position);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
+    }
+
+    private void updateTitle(int position) {
+        //noinspection ConstantConditions
+        getSupportActionBar().setTitle(getString(R.string.photo_viewer_title, position + 1, mPhotos.size()));
     }
 
     private class PhotoPagerAdapter extends FragmentStatePagerAdapter {
@@ -109,18 +137,5 @@ public class PhotoViewerActivity extends AppCompatActivity {
         }
     }
 
-    private class PhotoGestureListener extends GestureDetector.SimpleOnGestureListener {
-        private static final String TAG = "PhotoGestureListener";
 
-        @Override
-        public boolean onDown(MotionEvent e) {
-            return true;
-        }
-
-        @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            Log.i(TAG, "onFling: ");
-            return false;
-        }
-    }
 }

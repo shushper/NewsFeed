@@ -20,6 +20,8 @@ public class News extends RealmObject {
 
     private RealmList<Photo> photos;
 
+    private RealmList<Video> videos;
+
     public String getObjectId() {
         return objectId;
     }
@@ -66,5 +68,13 @@ public class News extends RealmObject {
 
     public void setPhotos(RealmList<Photo> photos) {
         this.photos = photos;
+    }
+
+    public RealmList<Video> getVideos() {
+        return videos;
+    }
+
+    public void setVideos(RealmList<Video> videos) {
+        this.videos = videos;
     }
 }
