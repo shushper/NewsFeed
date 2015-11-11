@@ -3,8 +3,7 @@
 
     <dimen name="grid_step">8dp</dimen>
 
-    <!-- NewsItem -->
-    <dimen name="news_item_image_height">75dp</dimen>
-    <dimen name="news_item_image_width">100dp</dimen>
+    <!-- GalleryItem -->
+    <dimen name="gallery_item_height">100dp</dimen>
 
 </resources>

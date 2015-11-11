@@ -27,6 +27,11 @@
             android:name=".ui.ItemActivity"
             android:screenOrientation="portrait"/>
 
+        <activity
+            android:theme="@style/GalleryTheme"
+            android:name=".ui.PhotoViewerActivity"/>
+
+
         <service
             android:name=".api.ApiService"
             android:exported="false"/>

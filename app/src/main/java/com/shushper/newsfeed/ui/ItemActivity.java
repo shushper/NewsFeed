@@ -4,27 +4,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.shushper.newsfeed.R;
 import com.shushper.newsfeed.api.model.News;
 import com.shushper.newsfeed.helpers.TimeFormatter;
+import com.shushper.newsfeed.ui.adapters.PhotoGalleryAdapter;
+import com.shushper.newsfeed.ui.adapters.decoration.VerticalSpaceDecoration;
 import com.squareup.picasso.Picasso;
 
 import io.realm.Realm;
 
-/**
- * Created by shushper on 09.11.2015.
- */
-public class ItemActivity extends AppCompatActivity {
+
+public class ItemActivity extends AppCompatActivity implements PhotoGalleryAdapter.Listener {
 
     private static final String EXTRA_ITEM_ID = "item_id";
 
-    private TextView  mItemTitle;
-    private TextView  mItemDate;
-    private TextView  mItemContent;
-    private ImageView mItemImage;
 
     public static void start(Context context, String itemId) {
         Intent starter = new Intent(context, ItemActivity.class);
@@ -32,8 +30,17 @@ public class ItemActivity extends AppCompatActivity {
         context.startActivity(starter);
     }
 
+    //////////////////////////////////////////////////////////////////////////
+
+    private TextView     mItemTitle;
+    private TextView     mItemDate;
+    private TextView     mItemContent;
+    private ImageView    mItemImage;
+    private RecyclerView mGalleryRecycler;
+
     private Realm mRealm;
 
+    private String mItemId;
     private News mItem;
 
     private TimeFormatter mTimeFormatter;
@@ -46,13 +53,18 @@ public class ItemActivity extends AppCompatActivity {
         mRealm = Realm.getDefaultInstance();
         mTimeFormatter = new TimeFormatter(TimeFormatter.PATTERN_NEWS_FEED);
 
-        String itemId = getIntent().getStringExtra(EXTRA_ITEM_ID);
-        mItem = mRealm.where(News.class).equalTo("objectId", itemId).findFirst();
+        mItemId = getIntent().getStringExtra(EXTRA_ITEM_ID);
+        mItem = mRealm.where(News.class).equalTo("objectId", mItemId).findFirst();
 
         findViews();
         initVies();
 
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mRealm.close();
     }
 
     private void findViews() {
@@ -60,6 +72,7 @@ public class ItemActivity extends AppCompatActivity {
         mItemDate = (TextView) findViewById(R.id.item_date);
         mItemContent = (TextView) findViewById(R.id.item_content);
         mItemImage = (ImageView) findViewById(R.id.item_image);
+        mGalleryRecycler = (RecyclerView) findViewById(R.id.item_gallery);
     }
 
     private void initVies() {
@@ -67,12 +80,23 @@ public class ItemActivity extends AppCompatActivity {
         mItemDate.setText(mTimeFormatter.format(mItem.getCreatedAt()));
         mItemContent.setText(mItem.getContent());
 
+        mGalleryRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        mGalleryRecycler.addItemDecoration(new VerticalSpaceDecoration(this));
+
+        if (mItem.getPhotos().size() > 0) {
+            PhotoGalleryAdapter adapter = new PhotoGalleryAdapter();
+            adapter.setPhotos(mItem.getPhotos());
+            adapter.setListener(this);
+            mGalleryRecycler.setAdapter(adapter);
+        } else {
+
+        }
+
         Picasso.with(this).load(mItem.getImageUrl()).into(mItemImage);
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mRealm.close();
+    public void onPhotoClick(int photoId) {
+        PhotoViewerActivity.start(this, mItemId, photoId);
     }
 }

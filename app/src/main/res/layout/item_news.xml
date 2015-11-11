@@ -13,11 +13,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <com.shushper.newsfeed.ui.views.NewsImage
+        <com.shushper.newsfeed.ui.views.AspectRatioImageView
             android:id="@+id/news_image"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scaleType="centerCrop"
+            app:fixedSide="width"
             tools:background="#cccccc"/>
 
         <TextView

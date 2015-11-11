@@ -12,7 +12,7 @@ public interface ApiInterface {
 
     @Headers({
             "X-Parse-Application-Id: zgYc2rHs0d40x63tmPIJ70TKLp33Wchz92cXhx3T",
-            "X-Parse-REST-API-Key: izwO6ngy0cBsjV3m3x0f0Xk2WvjQRovUXuZnsSjc"
+            "X-Parse-Client-Key: YjLjegN7i5HAbdBlYPysDC7xs7X2kT4IeZJpxxbX"
     })
     @GET("/classes/News")
     ApiResponse<News> getNews();

@@ -33,12 +33,13 @@
                 android:textColor="@color/text_secondary"
                 tools:text="@string/debug_item_title"/>
 
-            <com.shushper.newsfeed.ui.views.NewsImage
+            <com.shushper.newsfeed.ui.views.AspectRatioImageView
                 android:id="@+id/item_image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/grid_step"
                 android:scaleType="centerCrop"
+                app:fixedSide="width"
                 tools:background="#cccccc"/>
 
             <TextView
@@ -48,6 +49,14 @@
                 android:layout_marginTop="@dimen/grid_step"
                 android:textColor="@color/text_secondary"
                 tools:text="@string/debug_item_content"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_marginTop="@dimen/grid_step"
+                android:id="@+id/item_gallery"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/gallery_item_height"
+                android:scrollbars="none"
+                tools:listitem="@layout/item_photo_gallery"/>
 
         </LinearLayout>
 
